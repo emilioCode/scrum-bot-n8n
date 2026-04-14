@@ -1,0 +1,115 @@
+{
+  "name": "daily-scrum",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "standup",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "97bd148b-e267-491c-ad10-b59b36b62b26",
+      "name": "Webhook",
+      "webhookId": "1de797e7-2ccb-4131-a042-9ad2f6d12944"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. Summarize this daily standup update clearly and highlight any blockers.\n\nYesterday: {{ $json.body.yesterday }}\nToday: {{ $json.body.today }}\nBlockers: {{ $json.body.blockers }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d288a3ab-87f8-4853-8854-4bce909068e8",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "2bb5fe16-33f1-49c8-9108-662ebf7287db",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "da8d3e64-9980-463f-a5d0-f3c6c3068bcb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1410d516a5fdbe32432a09fd1e61d29006fc6fe59744a2b3dee23d99ddd80635"
+  },
+  "id": "5lYjcWYJSIRtPF5N",
+  "tags": [
+    {
+      "name": "daily-meeting",
+      "id": "17QQxD5Awh6YcXdG",
+      "updatedAt": "2026-04-11T21:54:10.821Z",
+      "createdAt": "2026-04-11T21:54:10.821Z"
+    }
+  ]
+}
