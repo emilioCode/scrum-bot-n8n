@@ -1,0 +1,115 @@
+{
+  "name": "sprint-summary",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sprint-summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        -64
+      ],
+      "id": "110e0e63-3d7d-4fba-b0ff-d6fc48ed5895",
+      "name": "Webhook",
+      "webhookId": "2c400b93-80a9-4184-b711-a63899e068ce"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. Generate a professional end-of-sprint summary report.\n\nSprint Number: {{ $json.body.sprintNumber }}\nSprint Goal: {{ $json.body.sprintGoal }}\nCompleted Stories: {{ $json.body.completedStories }}\nIncomplete Stories: {{ $json.body.incompleteStories }}\nTeam Blockers: {{ $json.body.blockers }}\nTeam Members: {{ $json.body.teamMembers }}\n\nGenerate a concise sprint summary including:\n1. Sprint highlights\n2. What was accomplished\n3. What was not completed and why\n4. Key blockers encountered\n5. Recommendations for next sprint"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "9bc92b2e-6eff-41f4-9732-13ce00564053",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output[0].content[0].text}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        -64
+      ],
+      "id": "7f8309fb-9a8f-4315-89c6-e283a1961189",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e177e11f-367b-4bb8-8c33-e31705192784",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1410d516a5fdbe32432a09fd1e61d29006fc6fe59744a2b3dee23d99ddd80635"
+  },
+  "id": "olVqaxkOpOE8slIt",
+  "tags": [
+    {
+      "name": "sprint-summary",
+      "id": "SAsY4XxBAK8wnLJv",
+      "updatedAt": "2026-04-13T05:16:15.860Z",
+      "createdAt": "2026-04-13T05:16:15.860Z"
+    }
+  ]
+}
