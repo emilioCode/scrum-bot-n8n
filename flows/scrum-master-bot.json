@@ -1,0 +1,331 @@
+{
+  "name": "scrum-master-bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "scrum-bot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        16
+      ],
+      "id": "d06bfe72-5578-40d7-8641-2c5396fe4841",
+      "name": "Webhook",
+      "webhookId": "3d869f4b-9f9e-4042-880b-bd1c82ab4d27"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "standup",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e391b0bd-bb15-4ceb-834e-1587dcf50f56"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5192338e-69ec-491d-95ac-0d639f5e4c24",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "blocker",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e327c099-c731-4137-bfd9-3ce6658a10dc",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "sprint-summary",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2183c58a-f17a-42bd-8d1a-ae0dc944b268",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. Summarize this daily standup update clearly and highlight any blockers.\n\nYesterday: {{ $json.body.yesterday }}\nToday: {{ $json.body.today }}\nBlockers: {{ $json.body.blockers }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        -112
+      ],
+      "id": "2ca13b6c-9cab-426b-8130-db0ccd49a8a8",
+      "name": "Message a model (standup)",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. Analyze this blocker and suggest solutions.\n\nTeam member: {{ $json.body.memberName }}\nBlocker: {{ $json.body.blockers }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cdc63b25-f8c7-4d2b-a8c8-9d9a9299080b",
+      "name": "Message a model (blocker)",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. Generate a sprint summary report.\n\nSprint Number: {{ $json.body.sprintNumber }}\nSprint Goal: {{ $json.body.sprintGoal }}\nCompleted Stories: {{ $json.body.completedStories }}\nIncomplete Stories: {{ $json.body.incompleteStories }}\nBlockers: {{ $json.body.blockers }}\nTeam Members: {{ $json.body.teamMembers }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        128
+      ],
+      "id": "c870d269-25e8-4720-96ad-2444f3390090",
+      "name": "Message a model (sprint-summary)",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        768,
+        0
+      ],
+      "id": "a86b5126-4f14-44a9-bac5-50a226457349",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Invalid type. Please select one of the following options: standup, blocker, sprint-summary.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        464,
+        304
+      ],
+      "id": "c29dc54a-e076-4343-825b-b2ff4c7f8a50",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Message a model (standup)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Message a model (sprint-summary)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model (blocker)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model (standup)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model (sprint-summary)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8f894acd-50db-4740-971d-e6b9dd086490",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1410d516a5fdbe32432a09fd1e61d29006fc6fe59744a2b3dee23d99ddd80635"
+  },
+  "id": "n6oHx47CFmLsKZyL",
+  "tags": [
+    {
+      "updatedAt": "2026-04-13T05:25:04.837Z",
+      "createdAt": "2026-04-13T05:25:04.837Z",
+      "id": "Uyn7qCM5Qmp2zh1R",
+      "name": "scrum-master-bot"
+    }
+  ]
+}
