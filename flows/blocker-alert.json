@@ -1,0 +1,182 @@
+{
+  "name": "blocker-alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "blockers",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a5d9f7a0-0f47-47a5-b7d1-cd3d501ace8c",
+      "name": "Webhook",
+      "webhookId": "801324cb-9754-48f8-ab4f-1663d9aa253c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "66cf6ecb-f852-4f10-9e2e-af0d9bf328e0",
+              "leftValue": "={{ $json.body.blockers }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cb7d7007-55d6-4bfc-969a-9a232a7686bc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a Scrum Master assistant. A team member has reported a blocker. \nAnalyze it and suggest possible solutions or escalation steps.\n\nTeam member: {{ $json.body.memberName }}\nBlocker: {{ $json.body.blockers }}\n\nProvide a clear analysis and recommended next steps to resolve the blocker."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "d14832b0-9c40-4fd0-bdea-14101ac23d91",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "scvx5B9seQjupmlX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "ad5d4118-3a4e-4ddb-8cc4-82dc419070d0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "No blockers reported. Great job!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        96
+      ],
+      "id": "7e5f7263-7f8b-4a7a-973c-c9531b9ddd19",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "71a1d26b-1397-459e-ae19-409ebc871cbd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1410d516a5fdbe32432a09fd1e61d29006fc6fe59744a2b3dee23d99ddd80635"
+  },
+  "id": "PEMh5PZztoNiIdMa",
+  "tags": [
+    {
+      "name": "daily-meeting",
+      "id": "17QQxD5Awh6YcXdG",
+      "updatedAt": "2026-04-11T21:54:10.821Z",
+      "createdAt": "2026-04-11T21:54:10.821Z"
+    }
+  ]
+}
