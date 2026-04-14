@@ -1,0 +1,19 @@
+# n8n
+.n8n/
+*.env
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
